@@ -26,3 +26,4 @@ FetchContent_MakeAvailable(GDExtension)
 #)
 
 add_subdirectory(serialport_cpp)
+add_subdirectory(src)
