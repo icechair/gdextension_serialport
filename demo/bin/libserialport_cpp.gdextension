@@ -1,7 +1,0 @@
-[configuration]
-
-entry_symbol = "serialport_cpp_init"
-
-[libraries]
-
-linux.64="res://bin/libserialport_cpp.linux.64.so"

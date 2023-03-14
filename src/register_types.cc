@@ -7,7 +7,7 @@
 #include "example.hpp"
 
 void
-init_serialport_cpp(godot::ModuleInitializationLevel p_level)
+init_gdserialport(godot::ModuleInitializationLevel p_level)
 {
   if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
     return;
@@ -17,7 +17,7 @@ init_serialport_cpp(godot::ModuleInitializationLevel p_level)
 }
 
 void
-uninit_serialport_cpp(godot::ModuleInitializationLevel p_level)
+uninit_gdserialport(godot::ModuleInitializationLevel p_level)
 {
   if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
     return;
@@ -27,15 +27,15 @@ uninit_serialport_cpp(godot::ModuleInitializationLevel p_level)
 extern "C"
   // Initialization.
   GDExtensionBool GDE_EXPORT
-  serialport_cpp_init(const GDExtensionInterface* p_interface,
-                      GDExtensionClassLibraryPtr p_library,
-                      GDExtensionInitialization* r_initialization)
+  gdext_init_gdserialport(const GDExtensionInterface* p_interface,
+                          GDExtensionClassLibraryPtr p_library,
+                          GDExtensionInitialization* r_initialization)
 {
   godot::GDExtensionBinding::InitObject init_obj(
     p_interface, p_library, r_initialization);
 
-  init_obj.register_initializer(init_serialport_cpp);
-  init_obj.register_terminator(uninit_serialport_cpp);
+  init_obj.register_initializer(init_gdserialport);
+  init_obj.register_terminator(uninit_gdserialport);
   init_obj.set_minimum_library_initialization_level(
     godot::MODULE_INITIALIZATION_LEVEL_SCENE);
 

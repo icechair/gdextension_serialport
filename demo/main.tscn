@@ -1,3 +1,31 @@
 [gd_scene format=3 uid="uid://chbjkl5mwvi64"]
 
 [node name="Main" type="Node2D"]
+
+[node name="HFlowContainer" type="HFlowContainer" parent="."]
+offset_right = 789.0
+offset_bottom = 277.0
+
+[node name="ItemList" type="ItemList" parent="HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+allow_reselect = true
+allow_rmb_select = true
+max_text_lines = 2
+auto_height = true
+item_count = 3
+item_0/text = "Sercom1"
+item_1/text = "Sercom2"
+item_2/text = "Sercom3"
+
+[node name="MenuButton" type="MenuButton" parent="HFlowContainer"]
+layout_mode = 2
+text = "comport"
+flat = false
+item_count = 3
+popup/item_0/text = "Sercom1"
+popup/item_0/id = 0
+popup/item_1/text = "Sercom2"
+popup/item_1/id = 1
+popup/item_2/text = "Sercom3"
+popup/item_2/id = 2
