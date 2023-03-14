@@ -1,4 +1,5 @@
 
+cmake_minimum_required(VERSION 3.20)
 include(FetchContent)
 
 FetchContent_Declare(
@@ -8,6 +9,8 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(GDExtension)
+FetchContent_GetProperties(GDExtension BINARY_DIR GDExtension)
+message(INFO " GDExtension binaryDir: ${gdextension_POPULATED}")
 
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

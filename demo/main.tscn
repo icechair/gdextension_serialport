@@ -29,3 +29,5 @@ popup/item_1/text = "Sercom2"
 popup/item_1/id = 1
 popup/item_2/text = "Sercom3"
 popup/item_2/id = 2
+
+[node name="SerialPort" type="SerialPort" parent="."]

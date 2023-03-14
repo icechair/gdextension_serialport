@@ -4,7 +4,7 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "example.hpp"
+#include "serialport.hpp"
 
 void
 init_gdserialport(godot::ModuleInitializationLevel p_level)
@@ -13,7 +13,7 @@ init_gdserialport(godot::ModuleInitializationLevel p_level)
     return;
   }
 
-  godot::ClassDB::register_class<Example>();
+  godot::ClassDB::register_class<SerialPort>();
 }
 
 void

@@ -10,15 +10,16 @@ include(cmake/gdextension.cmake)
 include(cmake/serialport.cmake)
 
 add_library(${PROJECT_NAME} SHARED
-  src/example.cc
+  src/serialport.cc
   src/register_types.cc
   include/register_types.h
 )
-
+message(INFO " GDExtension_BINARY_DIR: ${gdextension_BINARY_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE
   "include"
   "src"
-  ${GDExtension_BINARY_DIR}/gen/include
+  ${gdextension_BINARY_DIR}/gen/include
+
   ${serialport_SOURCE_DIR}
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC serialport godot::cpp)
