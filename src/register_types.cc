@@ -1,25 +1,25 @@
 #include "register_types.h"
+#include "serial.hpp"
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "serialport.hpp"
-
+namespace godot {
 void
-init_gdserialport(godot::ModuleInitializationLevel p_level)
+init_gdserialport(ModuleInitializationLevel p_level)
 {
-  if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
+  if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
     return;
   }
 
-  godot::ClassDB::register_class<SerialPort>();
+  ClassDB::register_class<Serial>();
 }
 
 void
-uninit_gdserialport(godot::ModuleInitializationLevel p_level)
+uninit_gdserialport(ModuleInitializationLevel p_level)
 {
-  if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
+  if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
     return;
   }
 }
@@ -31,13 +31,14 @@ extern "C"
                           GDExtensionClassLibraryPtr p_library,
                           GDExtensionInitialization* r_initialization)
 {
-  godot::GDExtensionBinding::InitObject init_obj(
+  GDExtensionBinding::InitObject init_obj(
     p_interface, p_library, r_initialization);
 
   init_obj.register_initializer(init_gdserialport);
   init_obj.register_terminator(uninit_gdserialport);
   init_obj.set_minimum_library_initialization_level(
-    godot::MODULE_INITIALIZATION_LEVEL_SCENE);
+    MODULE_INITIALIZATION_LEVEL_SCENE);
 
   return init_obj.init();
 }
+};

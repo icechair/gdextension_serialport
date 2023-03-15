@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://chbjkl5mwvi64"]
+[gd_scene load_steps=2 format=3 uid="uid://chbjkl5mwvi64"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_p08dx"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_p08dx")
 
 [node name="HFlowContainer" type="HFlowContainer" parent="."]
 offset_right = 789.0
@@ -29,5 +32,3 @@ popup/item_1/text = "Sercom2"
 popup/item_1/id = 1
 popup/item_2/text = "Sercom3"
 popup/item_2/id = 2
-
-[node name="SerialPort" type="SerialPort" parent="."]
