@@ -1,5 +1,5 @@
-#ifndef GDEXAMPLE_H
-#define GDEXAMPLE_H
+#ifndef SERIAL_HPP
+#define SERIAL_HPP
 
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/variant/builtin_types.hpp>
@@ -18,4 +18,4 @@ public:
 };
 };
 
-#endif
+#endif // SERIAL_HPP
