@@ -3,7 +3,8 @@
 
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/variant/builtin_types.hpp>
-#include <libserialport.h>
+#include <libserialport.hpp>
+
 namespace godot {
 
 class Serial : public Object
@@ -17,5 +18,12 @@ public:
   PackedStringArray get_port_names();
 };
 };
-
+/*
+VARIANT_ENUM_CAST(sp_return);
+VARIANT_ENUM_CAST(sp_mode);
+VARIANT_ENUM_CAST(sp_event);
+VARIANT_ENUM_CAST(sp_buffer);
+VARIANT_ENUM_CAST(sp_signal);
+VARIANT_ENUM_CAST(sp_transport);
+*/
 #endif // SERIAL_HPP

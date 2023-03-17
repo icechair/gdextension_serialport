@@ -8,6 +8,12 @@ func _ready():
 	print(cfg.baudrate);
 	cfg.baudrate = 115200;
 	print(cfg.baudrate);
+	print("flow: ", cfg.flowcontrol);
+	cfg.flowcontrol = PortConfig.SP_FLOWCONTROL_RTSCTS
+	print("flow: ", cfg.flowcontrol);
+	print("parity: ",cfg.parity)
+	cfg.parity = PortConfig.SP_PARITY_SPACE
+	print("parity: ", cfg.parity)
 	pass # Replace with function body.
 
 
