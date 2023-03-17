@@ -7,15 +7,15 @@
 
 namespace godot {
 
-class Serial : public Object
+class SerialPort : public Object
 {
-  GDCLASS(Serial, Object)
+  GDCLASS(SerialPort, Object)
 private:
 protected:
   static void _bind_methods();
 
 public:
-  PackedStringArray get_port_names();
+  static PackedStringArray get_port_names();
 };
 };
 /*

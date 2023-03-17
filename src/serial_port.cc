@@ -1,17 +1,17 @@
-#include "serial.hpp"
+#include "serial_port.hpp"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <libserialport.h>
 namespace godot {
 void
-Serial::_bind_methods()
+SerialPort::_bind_methods()
 {
-
-  godot::ClassDB::bind_method(godot::D_METHOD("get_port_names"),
-                              &Serial::get_port_names);
+  ClassDB::bind_static_method(
+    "SerialPort", D_METHOD("get_port_names"), &SerialPort::get_port_names);
 }
+
 PackedStringArray
-Serial::get_port_names()
+SerialPort::get_port_names()
 {
   sp_port** ports{};
   sp_list_ports(&ports);

@@ -1,6 +1,6 @@
 #include "register_types.h"
 #include "port_config.hpp"
-#include "serial.hpp"
+#include "serial_port.hpp"
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
@@ -14,7 +14,7 @@ init_gdserialport(ModuleInitializationLevel p_level)
     return;
   }
 
-  ClassDB::register_class<Serial>();
+  ClassDB::register_class<SerialPort>();
   ClassDB::register_class<PortConfig>();
 }
 

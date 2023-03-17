@@ -1,9 +1,8 @@
 extends Node2D
 
-@onready var serial: Serial = Serial.new()
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	print(serial.get_port_names())
+	print(SerialPort.get_port_names())
 	var cfg: PortConfig = PortConfig.new()
 	print(cfg.baudrate);
 	cfg.baudrate = 115200;
