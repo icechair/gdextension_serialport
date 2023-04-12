@@ -1,7 +1,7 @@
 #ifndef PORT_CONFIG_HPP
 #define PORT_CONFIG_HPP
 
-#include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/variant/builtin_types.hpp>
 #include <libserialport.hpp>
@@ -15,8 +15,8 @@ VARIANT_ENUM_CAST(sp_xonxoff);
 VARIANT_ENUM_CAST(sp_flowcontrol);
 
 namespace godot {
-class PortConfig : public Object {
-	GDCLASS(PortConfig, Object)
+class PortConfig : public RefCounted {
+	GDCLASS(PortConfig, RefCounted)
 private:
 	sp_port_config* _ptr;
 
@@ -46,6 +46,7 @@ public:
 	sp_xonxoff get_xonxoff() const;
 	void set_flowcontrol(const sp_flowcontrol);
 	sp_flowcontrol get_flowcontrol() const;
+	sp_port_config* ptr() const { return _ptr; }
 };
 } //namespace godot
 

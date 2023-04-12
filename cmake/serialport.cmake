@@ -12,6 +12,7 @@ ExternalProject_Add(libserialport
   UPDATE_DISCONNECTED OFF
   CONFIGURE_COMMAND "./autogen.sh" COMMAND "./configure" ARGS "-C" "CCFLAGS=-g -O2 -fPIC" "CXXFLAGS=-g -O2 -fPIC" "--with-pic=yes" "--prefix=${SERIALPORT_BIN}"
   BUILD_COMMAND "make"
+  UPDATE_COMMAND ""
   INSTALL_COMMAND make DEST=${SERIALPORT_BIN} install
   BUILD_BYPRODUCTS ${SERIALPORT_STATIC_LIB}
 )
