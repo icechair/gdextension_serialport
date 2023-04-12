@@ -4,4 +4,4 @@ entry_symbol = "gdext_init_gdserialport"
 
 [libraries]
 
-linux.64="res://bin/libgdserialport.linux.64.so"
+linux.64="res://bin/x11/libgdserialport.so"

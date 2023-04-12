@@ -17,15 +17,14 @@ add_library(${PROJECT_NAME} SHARED
 )
 message(INFO " GDExtension_BINARY_DIR: ${gdextension_BINARY_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE
+  ${gdextension_BINARY_DIR}/gen/include
+  ${serialport_SOURCE_DIR}
   "include"
   "src"
-  ${gdextension_BINARY_DIR}/gen/include
-
-  ${serialport_SOURCE_DIR}
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC serialport godot::cpp)
+add_dependencies(${PROJECT_NAME} libserialport)
 
-set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY COMPILE_FLAGS ${GODOT_COMPILE_FLAGS})
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -fPIC" )
 set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS ${GODOT_LINKER_FLAGS})
-
 set_property(TARGET ${PROJECT_NAME} PROPERTY OUTPUT_NAME "gdserialport")
