@@ -1,5 +1,5 @@
-#ifndef SERIAL_HPP
-#define SERIAL_HPP
+#ifndef SERIAL_PORT_HPP
+#define SERIAL_PORT_HPP
 
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/variant/builtin_types.hpp>
@@ -7,17 +7,16 @@
 
 namespace godot {
 
-class SerialPort : public Object
-{
-  GDCLASS(SerialPort, Object)
+class SerialPort : public Object {
+	GDCLASS(SerialPort, Object)
 private:
 protected:
-  static void _bind_methods();
+	static void _bind_methods();
 
 public:
-  static PackedStringArray get_port_names();
+	static PackedStringArray get_port_names();
 };
-};
+}; //namespace godot
 /*
 VARIANT_ENUM_CAST(sp_return);
 VARIANT_ENUM_CAST(sp_mode);
