@@ -1,16 +1,15 @@
 #include "serial_port.hpp"
 #include <libserialport.h>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <iostream>
-#include <vector>
 namespace godot {
 
 SerialPort::SerialPort() {
-	sp_new_config(&_cfg);
 }
+
 SerialPort::~SerialPort() {
-	sp_free_config(_cfg);
 	if (_port != nullptr) {
 		sp_close(_port);
 		sp_free_port(_port);
@@ -27,7 +26,9 @@ void SerialPort::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("open"), &SerialPort::open);
 	ClassDB::bind_method(D_METHOD("close"), &SerialPort::close);
-	ClassDB::bind_method(D_METHOD("write"), &SerialPort::write);
+	ClassDB::bind_method(D_METHOD("write", "data"), &SerialPort::write);
+	ClassDB::bind_method(D_METHOD("read"), &SerialPort::read);
+	ClassDB::bind_method(D_METHOD("is_open"), &SerialPort::is_open);
 
 	ADD_SIGNAL(MethodInfo("byte_received", PropertyInfo(Variant::INT, "data")));
 
@@ -44,65 +45,43 @@ void SerialPort::_bind_methods() {
 	//portconfig
 	ClassDB::bind_method(D_METHOD("set_baudrate"), &SerialPort::set_baudrate);
 	ClassDB::bind_method(D_METHOD("get_baudrate"), &SerialPort::get_baudrate);
-	ClassDB::add_property("SerialPort",
-			PropertyInfo(Variant::INT, "baudrate"),
-			"set_baudrate",
-			"get_baudrate");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "baudrate"), "set_baudrate", "get_baudrate");
 
 	ClassDB::bind_method(D_METHOD("set_bits"), &SerialPort::set_bits);
 	ClassDB::bind_method(D_METHOD("get_bits"), &SerialPort::get_bits);
-	ClassDB::add_property(
-			"SerialPort", PropertyInfo(Variant::INT, "bits"), "set_bits", "get_bits");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "bits"), "set_bits", "get_bits");
 
 	ClassDB::bind_method(D_METHOD("set_parity"), &SerialPort::set_parity);
 	ClassDB::bind_method(D_METHOD("get_parity"), &SerialPort::get_parity);
-	ClassDB::add_property("SerialPort",
-			PropertyInfo(Variant::INT, "parity"),
-			"set_parity",
-			"get_parity");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "parity"), "set_parity", "get_parity");
 
 	ClassDB::bind_method(D_METHOD("set_stopbits"), &SerialPort::set_stopbits);
 	ClassDB::bind_method(D_METHOD("get_stopbits"), &SerialPort::get_stopbits);
-	ClassDB::add_property("SerialPort",
-			PropertyInfo(Variant::INT, "stopbits"),
-			"set_stopbits",
-			"get_stopbits");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "stopbits"), "set_stopbits", "get_stopbits");
 
 	ClassDB::bind_method(D_METHOD("set_rts"), &SerialPort::set_rts);
 	ClassDB::bind_method(D_METHOD("get_rts"), &SerialPort::get_rts);
-	ClassDB::add_property(
-			"SerialPort", PropertyInfo(Variant::INT, "rts"), "set_rts", "get_rts");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "rts"), "set_rts", "get_rts");
 
 	ClassDB::bind_method(D_METHOD("set_cts"), &SerialPort::set_cts);
 	ClassDB::bind_method(D_METHOD("get_cts"), &SerialPort::get_cts);
-	ClassDB::add_property(
-			"SerialPort", PropertyInfo(Variant::INT, "cts"), "set_cts", "get_cts");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "cts"), "set_cts", "get_cts");
 
 	ClassDB::bind_method(D_METHOD("set_dtr"), &SerialPort::set_dtr);
 	ClassDB::bind_method(D_METHOD("get_dtr"), &SerialPort::get_dtr);
-	ClassDB::add_property(
-			"SerialPort", PropertyInfo(Variant::INT, "dtr"), "set_dtr", "get_dtr");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "dtr"), "set_dtr", "get_dtr");
 
 	ClassDB::bind_method(D_METHOD("set_dsr"), &SerialPort::set_dsr);
 	ClassDB::bind_method(D_METHOD("get_dsr"), &SerialPort::get_dsr);
-	ClassDB::add_property(
-			"SerialPort", PropertyInfo(Variant::INT, "dsr"), "set_dsr", "get_dsr");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "dsr"), "set_dsr", "get_dsr");
 
 	ClassDB::bind_method(D_METHOD("set_xonxoff"), &SerialPort::set_xonxoff);
 	ClassDB::bind_method(D_METHOD("get_xonxoff"), &SerialPort::get_xonxoff);
-	ClassDB::add_property("SerialPort",
-			PropertyInfo(Variant::INT, "xonxoff"),
-			"set_xonxoff",
-			"get_xonxoff");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "xonxoff"), "set_xonxoff", "get_xonxoff");
 
-	ClassDB::bind_method(D_METHOD("set_flowcontrol"),
-			&SerialPort::set_flowcontrol);
-	ClassDB::bind_method(D_METHOD("get_flowcontrol"),
-			&SerialPort::get_flowcontrol);
-	ClassDB::add_property("SerialPort",
-			PropertyInfo(Variant::INT, "flowcontrol"),
-			"set_flowcontrol",
-			"get_flowcontrol");
+	ClassDB::bind_method(D_METHOD("set_flowcontrol"), &SerialPort::set_flowcontrol);
+	ClassDB::bind_method(D_METHOD("get_flowcontrol"), &SerialPort::get_flowcontrol);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "flowcontrol"), "set_flowcontrol", "get_flowcontrol");
 
 	BIND_ENUM_CONSTANT(SP_PARITY_INVALID);
 	BIND_ENUM_CONSTANT(SP_PARITY_NONE);
@@ -141,10 +120,19 @@ void SerialPort::_bind_methods() {
 	BIND_ENUM_CONSTANT(SP_FLOWCONTROL_DTRDSR);
 }
 
+bool SerialPort::is_open() const {
+	return _is_open;
+}
+
+void SerialPort::set_port_name(String name) {
+	_name = name;
+}
+String SerialPort::get_port_name() const {
+	return _name;
+}
+
 PackedStringArray
 SerialPort::get_port_names() {
-	UtilityFunctions::print("SerialPort::get_port_names()");
-	std::cout << "get_port_names" << std::endl;
 	sp_port** ports{};
 	sp_list_ports(&ports);
 	PackedStringArray names{};
@@ -156,44 +144,99 @@ SerialPort::get_port_names() {
 	return names;
 }
 
-sp_return SerialPort::open(sp_mode flags) {
-	UtilityFunctions::print("SerialPort::open()");
-	std::cout << "open" << std::endl;
-	if (_port != nullptr) {
-		UtilityFunctions::printerr("SerialPort::open(): failed: port already open");
-		return sp_return::SP_ERR_FAIL;
-	} /*
-	 sp_return status = sp_get_port_by_name(_name.utf8().get_data(), &_port);
-	 if (status != sp_return::SP_OK) {
-		 UtilityFunctions::printerr("SerialPort::open(): get_port_by_name failed: ", status);
-		 _port = nullptr;
-		 return status;
-	 }
-	 UtilityFunctions::print("SerialPort::open(): cfg: ", cfg);
-	 status = sp_set_config(_port, cfg->ptr());
-	 if (status != sp_return::SP_OK) {
-		 UtilityFunctions::printerr("SerialPort::open(): set_config failed: ", status);
-		 sp_free_port(_port);
-		 _port = nullptr;
-		 return status;
-	 }
+sp_return SerialPort::_set_config() {
+	sp_return status = sp_set_baudrate(_port, _baudrate);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_baudrate failed: ", status, _baudrate);
+		return status;
+	}
 
-	 status = sp_open(_port, flags);
-	 if (status != sp_return::SP_OK) {
-		 UtilityFunctions::printerr("SerialPort::open(): open failed: ", status);
-		 sp_free_port(_port);
-		 _port = nullptr;
-		 return status;
-	 }
- */
+	status = sp_set_bits(_port, _bits);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_bits failed: ", status, _bits);
+		return status;
+	}
+
+	status = sp_set_parity(_port, _parity);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_parity failed: ", status, _parity);
+		return status;
+	}
+
+	status = sp_set_stopbits(_port, _stopbits);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_stopbits failed: ", status, _stopbits);
+		return status;
+	}
+
+	status = sp_set_rts(_port, _rts);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_rts failed: ", status, _rts);
+		return status;
+	}
+
+	status = sp_set_cts(_port, _cts);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_cts failed: ", status, _cts);
+		return status;
+	}
+
+	status = sp_set_dtr(_port, _dtr);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_dtr failed: ", status, _dtr);
+		return status;
+	}
+
+	status = sp_set_dsr(_port, _dsr);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_dsr failed: ", status, _dsr);
+		return status;
+	}
+
+	status = sp_set_xon_xoff(_port, _xonxoff);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_xonxoff failed: ", status, _xonxoff);
+		return status;
+	}
+
+	status = sp_set_flowcontrol(_port, _flowcontrol);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::_set_config(): set_flowcontrol failed: ", status, _flowcontrol);
+		return status;
+	}
+	return sp_return::SP_OK;
+}
+
+sp_return SerialPort::open(sp_mode flags) {
+	if (_is_open) {
+		UtilityFunctions::printerr("SerialPort::open(): already open");
+		return sp_return::SP_ERR_FAIL;
+	}
+
+	sp_return status = sp_get_port_by_name(_name.utf8().get_data(), &_port);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::open(): get_port_by_name failed: ", status);
+		return status;
+	}
+
+	status = sp_open(_port, flags);
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::open(): open failed: ", status);
+		return status;
+	}
+
+	status = _set_config();
+	if (status != sp_return::SP_OK) {
+		UtilityFunctions::printerr("SerialPort::open(): _set_config failed: ", status);
+		return status;
+	}
+
+	_is_open = true;
 	return sp_return::SP_OK;
 }
 
 sp_return SerialPort::close() {
-	if (_port == nullptr) {
-		UtilityFunctions::printerr("SerialPort::close(): failed: was not open");
-		return sp_return::SP_ERR_ARG;
-	}
+	_is_open = false;
 	sp_return status = sp_close(_port);
 	if (status != sp_return::SP_OK) {
 		UtilityFunctions::printerr("SerialPort::close(): close failed: ", status);
@@ -202,11 +245,7 @@ sp_return SerialPort::close() {
 	return sp_return::SP_OK;
 }
 
-sp_return SerialPort::write(PackedByteArray data) {
-	if (_port == nullptr) {
-		UtilityFunctions::printerr("SerialPort::write() failed: port is not open");
-		return sp_return::SP_ERR_FAIL;
-	}
+sp_return SerialPort::write(const PackedByteArray& data) {
 	sp_return status = sp_nonblocking_write(_port, data.ptr(), data.size());
 	if (status < sp_return::SP_OK) {
 		UtilityFunctions::printerr("SerialPort::write() failed: ", status);
@@ -214,123 +253,108 @@ sp_return SerialPort::write(PackedByteArray data) {
 	return status;
 }
 
-void SerialPort::_process(float delta) {
-	if (_port == nullptr) {
-		return;
-	}
-
+PackedByteArray SerialPort::read() {
+	PackedByteArray data{};
 	sp_return status = sp_nonblocking_read(_port, _buffer.data(), _buffer.size());
 	if (status > 0) {
-		UtilityFunctions::print("SerialPort::_process(): nonblocking_read: ", status);
 		for (int i = 0; i < status; i++) {
-			emit_signal("byte_received", _buffer[i]);
+			data.push_back(_buffer[i]);
 		}
 	}
+	if (status < 0) {
+		UtilityFunctions::print("SerialPort::_process(): read failed: ", status);
+	}
+	return data;
 }
 
-void SerialPort::set_baudrate(int bd) {
-	sp_set_config_baudrate(_cfg, bd);
+void SerialPort::_process(float delta) {
+}
+
+void SerialPort::set_baudrate(int baudrate) {
+	_baudrate = baudrate;
 }
 
 int SerialPort::get_baudrate() const {
-	int baudrate = 0;
-	sp_get_config_baudrate(_cfg, &baudrate);
-	return baudrate;
-}
-
-int SerialPort::get_bits() const {
-	int bits = 0;
-	sp_get_config_bits(_cfg, &bits);
-	return bits;
+	return _baudrate;
 }
 
 void SerialPort::set_bits(const int bits) {
-	sp_set_config_bits(_cfg, bits);
+	_bits = bits;
+}
+
+int SerialPort::get_bits() const {
+	return _bits;
 }
 
 void SerialPort::set_parity(const sp_parity parity) {
-	sp_set_config_parity(_cfg, parity);
+	_parity = parity;
 }
 
 sp_parity
 SerialPort::get_parity() const {
-	sp_parity parity;
-	sp_get_config_parity(_cfg, &parity);
-	return parity;
+	return _parity;
 }
 
 void SerialPort::set_stopbits(const int stopbits) {
-	sp_set_config_stopbits(_cfg, stopbits);
+	_stopbits = stopbits;
 }
 
 int SerialPort::get_stopbits() const {
-	int stopbits;
-	sp_get_config_stopbits(_cfg, &stopbits);
-	return stopbits;
+	return _stopbits;
 }
 
 void SerialPort::set_rts(const sp_rts rts) {
-	sp_set_config_rts(_cfg, rts);
+	_rts = rts;
 }
 
 sp_rts
 SerialPort::get_rts() const {
-	sp_rts rts;
-	sp_get_config_rts(_cfg, &rts);
-	return rts;
+	return _rts;
 }
 
 void SerialPort::set_cts(const sp_cts cts) {
-	sp_set_config_cts(_cfg, cts);
+	_cts = cts;
 }
 
 sp_cts
 SerialPort::get_cts() const {
-	sp_cts cts;
-	sp_get_config_cts(_cfg, &cts);
-	return cts;
+	return _cts;
 }
 
 void SerialPort::set_dtr(const sp_dtr dtr) {
-	sp_set_config_dtr(_cfg, dtr);
+	_dtr = dtr;
 }
 
 sp_dtr
 SerialPort::get_dtr() const {
-	sp_dtr dtr;
-	sp_get_config_dtr(_cfg, &dtr);
-	return dtr;
+	return _dtr;
 }
 
 void SerialPort::set_dsr(const sp_dsr dsr) {
-	sp_set_config_dsr(_cfg, dsr);
+	_dsr = dsr;
 }
 
 sp_dsr
 SerialPort::get_dsr() const {
-	sp_dsr dsr;
-	sp_get_config_dsr(_cfg, &dsr);
-	return dsr;
+	return _dsr;
 }
 
 void SerialPort::set_xonxoff(const sp_xonxoff xonxoff) {
-	sp_set_config_xon_xoff(_cfg, xonxoff);
+	_xonxoff = xonxoff;
 }
 
 sp_xonxoff
 SerialPort::get_xonxoff() const {
-	sp_xonxoff xonxoff;
-	sp_get_config_xon_xoff(_cfg, &xonxoff);
-	return xonxoff;
+	return _xonxoff;
 }
 
 void SerialPort::set_flowcontrol(const sp_flowcontrol flowcontrol) {
-	sp_set_config_flowcontrol(_cfg, flowcontrol);
+	_flowcontrol = flowcontrol;
 }
 
 sp_flowcontrol
 SerialPort::get_flowcontrol() const {
-	return sp_flowcontrol::SP_FLOWCONTROL_NONE;
+	return _flowcontrol;
 }
 
 }; //namespace godot

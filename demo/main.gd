@@ -5,6 +5,10 @@ extends Node2D
 @onready var buttonRefresh: Button = $"HFlowContainer/ButtonRefresh"
 @onready var optionComPort: OptionButton = $"HFlowContainer/OptionComPort"
 @onready var serial: SerialPort = SerialPort.new()
+
+var time_start = 0
+var time_now = 0
+
 func updateComPorts():
 	optionComPort.clear()
 	optionComPort.add_separator("choose")
@@ -13,6 +17,7 @@ func updateComPorts():
 	pass
 	optionComPort.select(-1)
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	updateComPorts()
@@ -20,8 +25,11 @@ func _ready():
 	buttonRefresh.connect("pressed", updateComPorts)
 	buttonConnect.connect("pressed", _on_connect_pressed)
 	serial.connect("byte_received", _on_byte_received)
-
+	print("baudrate: ", serial.baudrate)
 	serial.baudrate = 115200
+	serial.bits = 8
+	print("baudrate: ", serial.baudrate)
+	time_start = Time.get_ticks_msec()
 	pass # Replace with function body.
 
 func _on_connect_pressed():
@@ -38,8 +46,19 @@ func _on_comport_selected(id):
 	buttonConnect.disabled = false
 	serial.port_name = name
 	pass
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 #	menuComPort.get_
+	time_now = Time.get_ticks_msec()
+	var elapsed = time_now - time_start
+	if serial.is_open():
+		var data = serial.read()
+		if data.is_empty() and elapsed > 2000:
+			var msg = "hello world!\r\n".to_utf8_buffer()
+			serial.write(msg)
+			time_start = time_now
+		elif not data.is_empty():
+			print(data.hex_encode())
+			print(data.get_string_from_utf8())
+		pass
 	pass

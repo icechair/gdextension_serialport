@@ -3,6 +3,7 @@
 
 #include <array>
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/builtin_types.hpp>
 #include <libserialport.hpp>
 
@@ -23,12 +24,23 @@ class SerialPort : public RefCounted {
 	GDCLASS(SerialPort, RefCounted)
 private:
 	sp_port* _port = nullptr;
-	sp_port_config* _cfg = nullptr;
-	String _name = "";
 	std::array<uint8_t, 256> _buffer = {};
+	String _name{ "" };
+	int _baudrate = 115200;
+	int _bits = 8;
+	sp_parity _parity = sp_parity::SP_PARITY_NONE;
+	int _stopbits = 1;
+	sp_rts _rts = sp_rts::SP_RTS_OFF;
+	sp_cts _cts = sp_cts::SP_CTS_IGNORE;
+	sp_dtr _dtr = sp_dtr::SP_DTR_OFF;
+	sp_dsr _dsr = sp_dsr::SP_DSR_IGNORE;
+	sp_xonxoff _xonxoff = sp_xonxoff::SP_XONXOFF_DISABLED;
+	sp_flowcontrol _flowcontrol = sp_flowcontrol::SP_FLOWCONTROL_NONE;
+	bool _is_open = false;
 
 protected:
 	static void _bind_methods();
+	sp_return _set_config();
 
 public:
 	SerialPort();
@@ -36,9 +48,10 @@ public:
 	static PackedStringArray get_port_names();
 	sp_return open(sp_mode flags);
 	sp_return close();
-	void set_port_name(String name) { _name = name; }
-	String get_port_name() { return _name; }
-	sp_return write(PackedByteArray data);
+	void set_port_name(String name);
+	String get_port_name() const;
+	sp_return write(const PackedByteArray& data);
+	PackedByteArray read();
 	void _process(float delta);
 
 	void set_baudrate(const int baudrate);
@@ -61,6 +74,7 @@ public:
 	sp_xonxoff get_xonxoff() const;
 	void set_flowcontrol(const sp_flowcontrol);
 	sp_flowcontrol get_flowcontrol() const;
+	bool is_open() const;
 };
 }; //namespace godot
 
