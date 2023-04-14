@@ -10,7 +10,6 @@ include(cmake/gdextension.cmake)
 include(cmake/serialport.cmake)
 
 add_library(${PROJECT_NAME} SHARED
-  src/port_config.cc
   src/serial_port.cc
   src/register_types.cc
   include/register_types.h

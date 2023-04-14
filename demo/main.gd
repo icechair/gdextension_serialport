@@ -5,7 +5,6 @@ extends Node2D
 @onready var buttonRefresh: Button = $"HFlowContainer/ButtonRefresh"
 @onready var optionComPort: OptionButton = $"HFlowContainer/OptionComPort"
 @onready var serial: SerialPort = SerialPort.new()
-@onready var serialConfig: PortConfig = PortConfig.new()
 func updateComPorts():
 	optionComPort.clear()
 	optionComPort.add_separator("choose")
@@ -20,12 +19,13 @@ func _ready():
 	optionComPort.connect("item_selected", _on_comport_selected)
 	buttonRefresh.connect("pressed", updateComPorts)
 	buttonConnect.connect("pressed", _on_connect_pressed)
-	serialConfig.baudrate = 115200
+	serial.connect("byte_received", _on_byte_received)
+
+	serial.baudrate = 115200
 	pass # Replace with function body.
 
 func _on_connect_pressed():
-	serial.open(serial.SP_MODE_READ_WRITE, serialConfig)
-	serial.connect("byte_received", _on_byte_received)
+	serial.open(serial.SP_MODE_READ_WRITE)
 	pass
 
 func _on_byte_received(byte:int):
