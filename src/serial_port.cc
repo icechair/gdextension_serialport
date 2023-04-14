@@ -262,7 +262,7 @@ PackedByteArray SerialPort::read() {
 		}
 	}
 	if (status < 0) {
-		UtilityFunctions::print("SerialPort::_process(): read failed: ", status);
+		UtilityFunctions::printerr("SerialPort::_process(): read failed: ", status);
 	}
 	return data;
 }
